@@ -23,7 +23,6 @@ __pycache__/
 # Generated index artifacts
 data/index/
 data/processed/*.json
-Demo Video/
 
 # OS and editor files
 .DS_Store
