@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Policy and SOP Copilot</title>
+    <meta
+      name="description"
+      content="A GitHub Pages deployment of Policy and SOP Copilot for browser-based PDF question answering."
+    />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;9..144,700&family=IBM+Plex+Sans:wght@400;500;600&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="./styles.css" />
+    <script src="./site-config.js"></script>
+    <script type="module" src="./app.js"></script>
+  </head>
+  <body>
+    <div class="page-shell">
+      <header class="hero-card">
+        <div class="section-label">GitHub Pages Edition</div>
+        <h1>Policy and SOP Copilot</h1>
+        <p class="hero-copy">
+          Upload PDF policies or SOPs, build a temporary browser-side corpus, and ask grounded
+          questions with source chunk citations. This version is static and runs entirely in your
+          browser.
+        </p>
+        <div class="hero-chips">
+          <span class="meta-chip">Static deploy</span>
+          <span class="meta-chip">Browser PDF processing</span>
+          <span class="meta-chip">Runtime OpenAI key</span>
+        </div>
+      </header>
+
+      <section id="authView" class="auth-layout">
+        <article class="panel login-panel">
+          <div class="section-label">Secure Access</div>
+          <h2>Sign in to continue</h2>
+          <p class="panel-copy">
+            Enter the configured username and password to unlock the upload and question workflow.
+          </p>
+          <form id="loginForm" class="stack-form">
+            <label class="field">
+              <span>Username</span>
+              <input id="usernameInput" name="username" type="text" autocomplete="username" />
+            </label>
+            <label class="field">
+              <span>Password</span>
+              <input
+                id="passwordInput"
+                name="password"
+                type="password"
+                autocomplete="current-password"
+              />
+            </label>
+            <button id="loginButton" type="submit" class="primary-button">Sign In</button>
+          </form>
+          <p id="loginStatus" class="status-message" role="status" aria-live="polite"></p>
+          <p class="security-note">
+            This login gate is client-side only. It is a light access barrier, not strong security.
+          </p>
+        </article>
+
+        <article class="panel guidance-panel">
+          <div class="section-label">How This Build Works</div>
+          <h2>Static hosting with browser-side retrieval</h2>
+          <p class="panel-copy">
+            GitHub Pages cannot run the original Python and Streamlit stack. This site keeps the
+            same basic workflow by parsing PDFs in the browser, ranking text chunks locally, and
+            sending the final grounded prompt to OpenAI only when you ask a question.
+          </p>
+          <ul class="feature-list">
+            <li>Your OpenAI API key is entered at runtime and kept only in this tab.</li>
+            <li>Uploaded PDFs stay in the browser session and are not written back to the repo.</li>
+            <li>The Pages version uses lexical retrieval instead of FAISS embeddings.</li>
+          </ul>
+        </article>
+      </section>
+
+      <section id="workspace" hidden>
+        <div class="workspace-grid">
+          <aside class="control-rail">
+            <article class="panel">
+              <div class="section-label">Session Controls</div>
+              <label class="field">
+                <span>OpenAI API key</span>
+                <input
+                  id="apiKeyInput"
+                  type="password"
+                  placeholder="sk-..."
+                  autocomplete="off"
+                />
+              </label>
+              <label class="field">
+                <span>Answer model</span>
+                <input id="modelInput" type="text" />
+              </label>
+              <label class="field">
+                <span>Retrieved chunks</span>
+                <div class="range-row">
+                  <input id="topKInput" type="range" />
+                  <output id="topKValue" for="topKInput">5</output>
+                </div>
+              </label>
+              <div class="button-row">
+                <button id="clearHistoryButton" type="button" class="secondary-button">
+                  Clear History
+                </button>
+                <button id="logoutButton" type="button" class="ghost-button">Logout</button>
+              </div>
+              <p class="panel-copy compact-copy">
+                The API key is used only for the answer call and is not saved to local storage.
+              </p>
+            </article>
+
+            <article class="panel">
+              <div class="section-label">Quick Fill</div>
+              <div id="exampleButtons" class="example-grid"></div>
+            </article>
+
+            <article class="panel">
+              <div class="section-label">Active Session Corpus</div>
+              <p id="corpusSummary" class="panel-copy compact-copy">
+                Upload and process PDFs to activate the corpus.
+              </p>
+              <div id="documentList" class="chip-wrap"></div>
+            </article>
+          </aside>
+
+          <main class="main-column">
+            <article class="panel">
+              <div class="section-label">1. Upload and Process</div>
+              <h2>Build a temporary corpus</h2>
+              <p class="panel-copy">
+                Select one or more PDFs, then extract text and create in-browser chunks for
+                question answering.
+              </p>
+              <label class="upload-zone" for="pdfInput">
+                <input id="pdfInput" type="file" accept=".pdf,application/pdf" multiple />
+                <span class="upload-title">Drop PDFs here or click to browse</span>
+                <span class="upload-copy">
+                  A newly processed batch replaces the active corpus for this tab.
+                </span>
+              </label>
+              <div class="button-row">
+                <button id="processButton" type="button" class="primary-button">
+                  Process Documents
+                </button>
+              </div>
+              <p id="uploadStatus" class="status-message" role="status" aria-live="polite"></p>
+            </article>
+
+            <article class="panel">
+              <div class="section-label">2. Ask a Question</div>
+              <h2>Ground answers in the uploaded PDFs</h2>
+              <form id="qaForm" class="stack-form">
+                <label class="field">
+                  <span>Question</span>
+                  <textarea
+                    id="questionInput"
+                    rows="5"
+                    placeholder="Ask a question about the processed PDFs."
+                  ></textarea>
+                </label>
+                <div class="button-row">
+                  <button id="askButton" type="submit" class="primary-button">Ask</button>
+                </div>
+              </form>
+              <p id="qaStatus" class="status-message" role="status" aria-live="polite"></p>
+            </article>
+
+            <article id="emptyState" class="panel empty-state">
+              <div class="section-label">Results</div>
+              <h2>No answers yet</h2>
+              <p class="panel-copy">
+                Process PDFs first, then ask a question to generate a grounded answer with source
+                references.
+              </p>
+            </article>
+
+            <section id="historyList" class="history-list" aria-live="polite"></section>
+          </main>
+        </div>
+      </section>
+    </div>
+  </body>
+</html>
