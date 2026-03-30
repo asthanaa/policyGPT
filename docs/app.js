@@ -175,6 +175,25 @@ function bindEvents() {
   elements.logoutButton.addEventListener("click", logout);
 }
 
+function getConfiguredCredentials() {
+  const configuredCredentials = CONFIG.auth?.credentials;
+  if (Array.isArray(configuredCredentials) && configuredCredentials.length > 0) {
+    return configuredCredentials;
+  }
+
+  const username = CONFIG.auth?.username;
+  const passwordHash = CONFIG.auth?.passwordHash;
+  if (username && passwordHash) {
+    return [{ username, passwordHash }];
+  }
+
+  return [];
+}
+
+function usernameIsConfigured(username) {
+  return getConfiguredCredentials().some((credential) => credential.username === username);
+}
+
 function restoreSession() {
   const authenticatedFlag = sessionStorage.getItem(SESSION_FLAG);
   if (authenticatedFlag !== "true") {
@@ -182,7 +201,7 @@ function restoreSession() {
   }
 
   const username = sessionStorage.getItem(SESSION_USERNAME);
-  if (username !== CONFIG.auth?.username) {
+  if (!usernameIsConfigured(username ?? "")) {
     sessionStorage.removeItem(SESSION_FLAG);
     sessionStorage.removeItem(SESSION_USERNAME);
     return;
@@ -204,13 +223,14 @@ async function handleLogin(event) {
 
   setStatus(elements.loginStatus, "Checking credentials...", "warn");
 
-  const expectedUsername = CONFIG.auth?.username ?? "";
-  const expectedPasswordHash = CONFIG.auth?.passwordHash ?? "";
+  const configuredCredentials = getConfiguredCredentials();
 
   try {
     const submittedHash = await sha256(password);
-    const credentialsMatch =
-      username === expectedUsername && submittedHash === expectedPasswordHash;
+    const credentialsMatch = configuredCredentials.some(
+      (credential) =>
+        username === credential.username && submittedHash === credential.passwordHash,
+    );
 
     if (!credentialsMatch) {
       setStatus(elements.loginStatus, "Invalid username or password.", "error");

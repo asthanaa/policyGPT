@@ -54,12 +54,14 @@ The `docs/` folder contains a static browser version of the app that can be depl
 - Retrieval is done locally in the browser with lexical chunk scoring instead of FAISS.
 - The OpenAI API key is entered at runtime in the browser instead of being stored on the server.
 
-### Default Login For The Pages Build
+### Demo Logins For The Pages Build
 
 The static site ships with a client-side login gate configured in `docs/site-config.js`.
 
 - Username: `asthanaa`
 - Password: `asthana15`
+- Username: `guest`
+- Password: `guest123`
 
 Before publishing publicly, replace those values. The password is stored as a SHA-256 hash, not in plain text. To generate a new hash:
 
