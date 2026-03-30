@@ -58,8 +58,8 @@ The `docs/` folder contains a static browser version of the app that can be depl
 
 The static site ships with a client-side login gate configured in `docs/site-config.js`.
 
-- Username: `policygpt`
-- Password: `policygpt-demo`
+- Username: `asthanaa`
+- Password: `asthana15`
 
 Before publishing publicly, replace those values. The password is stored as a SHA-256 hash, not in plain text. To generate a new hash:
 

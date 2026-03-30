@@ -1,7 +1,7 @@
 window.POLICY_GPT_CONFIG = {
   auth: {
-    username: "policygpt",
-    passwordHash: "b67890fed8802810767d2c4001de6d03337602444fcb1e77beb797a8ec07cd6b",
+    username: "asthanaa",
+    passwordHash: "37b5f96fa78a2dcab297bb3ba583d1dca2d535d3d0a51ebead2f0dd44e44801f",
   },
   openai: {
     model: "gpt-4.1-mini",
